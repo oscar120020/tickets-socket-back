@@ -16,22 +16,24 @@ class Server {
         // socket configuration
         this.io = socketio(this.server)
 
-    }
+        this.sockets = new Sockets(this.io)
 
-    socketConfiguration(){
-        new Sockets(this.io)
     }
 
     middlewares(){
         this.app.use(express.static(path.resolve(__dirname, "../public")))
         this.app.use(cors())
+
+        this.app.get("/api/latest", (req, res) => {
+            res.json({
+                ok: true,
+                latest: this.sockets.ticketList.last13
+            })
+        })
     }
 
     execute(){
         this.middlewares()
-
-        // Socket configuration
-        this.socketConfiguration()
 
         this.server.listen(this.port, () => {
             console.log("Serve running on port: ", this.port);

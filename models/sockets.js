@@ -1,17 +1,27 @@
+const TicketList = require("./ticket-list");
+
 class Sockets {
     constructor( io ){
         this.io = io;
-
+        this.ticketList = new TicketList()
         this.socketsEvents()
     }
 
     socketsEvents(){
         this.io.on('connection', ( socket ) => {
-            socket.on("message-to-serve", (data) => {
-                console.log(data);
+            console.log("cliente conecado");
 
-                this.io.emit("message-from-serve", data)
+            socket.on("solicitar-ticket", (_, callback) => {
+                const newTicket = this.ticketList.createTicket()
+                callback(newTicket)
             })
+
+            socket.on("siguiente-ticket", ({agente, escritorio}, callback) => {
+                const myTicket = this.ticketList.asignarTicket(agente, escritorio)
+                callback(myTicket)
+                this.io.emit("ticket-asignado", this.ticketList.last13)
+            })
+
         });
     }
 }
