@@ -30,6 +30,13 @@ class Server {
                 latest: this.sockets.ticketList.last13
             })
         })
+
+        this.app.get("/api/pendientes", (req, res) => {
+            res.json({
+                ok: true,
+                pendientes: this.sockets.ticketList.pendientes.length
+            })
+        })
     }
 
     execute(){
